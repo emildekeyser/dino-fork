@@ -11,6 +11,8 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
     private const string[] KEY_COMBINATION_LOOP_CONVERSATIONS = {"<Ctrl>Tab", null};
     private const string[] KEY_COMBINATION_LOOP_CONVERSATIONS_REV = {"<Ctrl><Shift>Tab", null};
 
+    private SysTray systray;
+
     private MainWindow window;
     public MainWindowController controller;
 
@@ -80,7 +82,8 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
                 config = new Config(db);
                 window = new MainWindow(this, stream_interactor, db, config);
                 controller.set_window(window);
-                if ((get_flags() & ApplicationFlags.IS_SERVICE) == ApplicationFlags.IS_SERVICE) window.delete_event.connect(window.hide_on_delete);
+                window.delete_event.connect(window.hide_on_delete);
+                systray = new SysTray(window);
             }
             window.present();
         });
@@ -130,7 +133,9 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
         add_action(about_action);
 
         SimpleAction quit_action = new SimpleAction("quit", null);
-        quit_action.activate.connect(quit);
+        quit_action.activate.connect(() => {
+            window.hide();
+        });
         add_action(quit_action);
         set_accels_for_action("app.quit", KEY_COMBINATION_QUIT);
 

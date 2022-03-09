@@ -11,6 +11,7 @@ find_packages(MAIN_PACKAGES REQUIRED
     GTK3
     ICU
     Gspell
+    StatusNotifier
 )
 
 set(RESOURCE_LIST
@@ -125,6 +126,7 @@ SOURCES
     src/ui/settings_dialog.vala
     src/ui/main_window.vala
     src/ui/main_window_controller.vala
+    src/ui/systray.vala
 
     src/ui/add_conversation/add_conference_dialog.vala
     src/ui/add_conversation/add_contact_dialog.vala
