@@ -11,17 +11,18 @@ namespace Dino.Ui {
             this.mainwindow = mainwindow;
 
             var category = StatusNotifier.Category.APPLICATION_STATUS;
-            var pixbuf = new Gdk.Pixbuf.from_file("./build/main/resources/icons/im.dino.Dino.png");
-            sni = new StatusNotifier.Item.from_pixbuf("dino", category, pixbuf);
+            string icon_name = "im.dino.Dino";
+            sni = new StatusNotifier.Item.from_icon_name("dino", category, icon_name);
             
             sni.set_status(StatusNotifier.Status.ACTIVE);
             sni.set_title("Dino");
             sni.set_item_is_menu(true);
 
-            sni.set_from_pixbuf(StatusNotifier.Icon.ICON, pixbuf);
-            sni.set_from_pixbuf(StatusNotifier.Icon.ATTENTION_ICON, pixbuf);
-            sni.set_from_pixbuf(StatusNotifier.Icon.OVERLAY_ICON, pixbuf);
-            sni.set_from_pixbuf(StatusNotifier.Icon.TOOLTIP_ICON, pixbuf);
+            sni.set_from_icon_name(StatusNotifier.Icon.ICON, icon_name);
+            sni.set_from_icon_name(StatusNotifier.Icon.ATTENTION_ICON, icon_name);
+            sni.set_from_icon_name(StatusNotifier.Icon.OVERLAY_ICON, icon_name);
+            sni.set_from_icon_name(StatusNotifier.Icon.TOOLTIP_ICON, icon_name);
+
 
             sni.context_menu.connect(show_menu); // TODO does not work atm with xapps SNI Host (Cinnamon etc)
             sni.secondary_activate.connect(show_menu);
