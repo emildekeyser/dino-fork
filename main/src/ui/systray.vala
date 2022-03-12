@@ -11,33 +11,48 @@ namespace Dino.Ui {
             this.mainwindow = mainwindow;
 
             var category = StatusNotifier.Category.APPLICATION_STATUS;
-            var status = StatusNotifier.Status.ACTIVE;
             var pixbuf = new Gdk.Pixbuf.from_file("./build/main/resources/icons/im.dino.Dino.png");
-
             sni = new StatusNotifier.Item.from_pixbuf("dino", category, pixbuf);
             
-            sni.set_status(status);
-            sni.main_icon_pixbuf = pixbuf;
-
+            sni.set_status(StatusNotifier.Status.ACTIVE);
             sni.set_title("Dino");
-            /* sni.set_tooltip_title("Dino"); */
-            /* sni.set_tooltip_body("Dino tooltip body"); */
+            sni.set_item_is_menu(true);
 
-            sni.activate.connect(make_menu);
-            sni.context_menu.connect(make_menu);
-            sni.secondary_activate.connect(make_menu);
+            sni.set_from_pixbuf(StatusNotifier.Icon.ICON, pixbuf);
+            sni.set_from_pixbuf(StatusNotifier.Icon.ATTENTION_ICON, pixbuf);
+            sni.set_from_pixbuf(StatusNotifier.Icon.OVERLAY_ICON, pixbuf);
+            sni.set_from_pixbuf(StatusNotifier.Icon.TOOLTIP_ICON, pixbuf);
+
+            sni.context_menu.connect(show_menu); // TODO does not work atm with xapps SNI Host (Cinnamon etc)
+            sni.secondary_activate.connect(show_menu);
+            sni.activate.connect(show_menu);
+            /* sni.scroll.connect((delta, orientation) => { make_menu(0, 0); return true; }); */
 
             sni.registration_failed.connect((error) => {
-                stderr.printf("Registration of StatusNotifierItem failed:\n");
-                stderr.printf(error.message);
-                stderr.printf("\n");
+                warning("Registration of StatusNotifierItem (systray) failed: " + error.message);
             });
 
             sni.register();
 
         }
 
-        private bool make_menu(int x, int y)
+        private bool show_menu(int x, int y)
+        {
+
+            // TODO It seems that if this here is done in a more straitforward
+            // way (without the timeout) then it is possible (observed on
+            // Cinnamon with the 'xapps' program as SNI Watcher/Host) that the
+            // click event that generated the Activate SNI method also causes
+            // the popup to immedietly dissapear ie not show up at all.
+
+            Timeout.add(100, () => {
+                make_menu();
+                return Source.REMOVE;
+            });
+            return true;
+        }
+
+        private void make_menu()
         {
             var menu = new Gtk.Menu();
             Gtk.Widget widget;
@@ -58,9 +73,7 @@ namespace Dino.Ui {
             widget.show();
             menu.attach(widget, 0, 1, 1, 2);
 
-            menu.popup(null, null, null, 0, Gtk.get_current_event_time());
-
-            return true;
+            menu.popup(null, null, null, 3, Gtk.get_current_event_time());
         }
 
     }
