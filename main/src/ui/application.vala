@@ -82,8 +82,8 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
                 config = new Config(db);
                 window = new MainWindow(this, stream_interactor, db, config);
                 controller.set_window(window);
-                window.delete_event.connect(window.hide_on_delete);
-                systray = new SysTray(window);
+
+                setup_systray();
             }
             window.present();
         });
@@ -119,6 +119,41 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
         }
     }
 
+    private void setup_systray()
+    {
+
+                systray = new SysTray();
+                systray.activate.connect(() => {
+                    if (window.visible) {
+                        window.hide();
+                    } else {
+                        window.show();
+                    }
+                });
+
+                window.delete_event.connect(() => {
+                    if (settings.systray) {
+                        window.hide();
+                    } else {
+                        quit();
+                    }
+                    return true;
+                });
+
+                settings.notify["systray"].connect((_paramspec) => {
+                    if (settings.systray) {
+                        systray.enable();
+                    } else {
+                        systray.disable();
+                    }
+                });
+
+                if (settings.systray) {
+                    systray.enable();
+                }
+
+    }
+
     private void create_actions() {
         SimpleAction accounts_action = new SimpleAction("accounts", null);
         accounts_action.activate.connect(show_accounts_window);
@@ -133,9 +168,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
         add_action(about_action);
 
         SimpleAction quit_action = new SimpleAction("quit", null);
-        quit_action.activate.connect(() => {
-            window.hide();
-        });
+        quit_action.activate.connect(quit);
         add_action(quit_action);
         set_accels_for_action("app.quit", KEY_COMBINATION_QUIT);
 
