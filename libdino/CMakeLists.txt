@@ -13,6 +13,7 @@ SOURCES
     src/dbus/login1.vala
     src/dbus/notifications.vala
     src/dbus/upower.vala
+    src/dbus/status_notifier_item.vala
 
     src/entity/account.vala
     src/entity/call.vala

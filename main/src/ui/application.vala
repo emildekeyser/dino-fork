@@ -11,7 +11,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
     private const string[] KEY_COMBINATION_LOOP_CONVERSATIONS = {"<Ctrl>Tab", null};
     private const string[] KEY_COMBINATION_LOOP_CONVERSATIONS_REV = {"<Ctrl><Shift>Tab", null};
 
-    private SysTray systray;
+    private StatusNotifierItem systray;
 
     private MainWindow window;
     public MainWindowController controller;
@@ -122,35 +122,48 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
     private void setup_systray()
     {
 
-                systray = new SysTray();
-                systray.activate.connect(() => {
-                    if (window.visible) {
-                        window.hide();
-                    } else {
-                        window.show();
-                    }
-                });
+        systray = new StatusNotifierItem() {
+            id = "org.dino.application",
+            category = "Communications",
+            title = "Dino",
+            status = "NeedsAttention",
+            icon_name = "im.dino.Dino",
+            is_menu = true
+        };
 
-                window.delete_event.connect(() => {
-                    if (settings.systray) {
-                        window.hide();
-                    } else {
-                        quit();
-                    }
-                    return true;
-                });
+        var menu = new GLib.Menu();
+        menu.append("Show", "app.show");
+        menu.append("Quit", "app.quit");
+        systray.menu_model = menu;
 
-                settings.notify["systray"].connect((_paramspec) => {
-                    if (settings.systray) {
-                        systray.enable();
-                    } else {
-                        systray.disable();
-                    }
-                });
+        systray.activate.connect((x, y) => {
+            if (window.visible) {
+                window.hide();
+            } else {
+                window.show();
+            }
+        });
 
-                if (settings.systray) {
-                    systray.enable();
-                }
+        window.delete_event.connect(() => {
+            if (settings.systray) {
+                window.hide();
+            } else {
+                quit();
+            }
+            return true;
+        });
+
+        settings.notify["systray"].connect((_paramspec) => {
+            if (settings.systray) {
+                systray.register();
+            } else {
+                systray.unregister();
+            }
+        });
+
+        if (settings.systray) {
+            systray.register();
+        }
 
     }
 
@@ -171,6 +184,10 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
         quit_action.activate.connect(quit);
         add_action(quit_action);
         set_accels_for_action("app.quit", KEY_COMBINATION_QUIT);
+
+        SimpleAction show_action = new SimpleAction("show", null);
+        show_action.activate.connect(() => window.show());
+        add_action(show_action);
 
         SimpleAction open_conversation_action = new SimpleAction("open-conversation", VariantType.INT32);
         open_conversation_action.activate.connect((variant) => {
