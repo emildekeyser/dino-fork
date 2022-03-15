@@ -126,7 +126,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
             id = "org.dino.application",
             category = "Communications",
             title = "Dino",
-            status = "NeedsAttention",
+            status = "Active",
             icon_name = "im.dino.Dino",
             is_menu = true
         };
