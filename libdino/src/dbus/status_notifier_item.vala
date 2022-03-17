@@ -319,7 +319,7 @@ public class StatusNotifierItem : Object {
     private DBusMenu dbus_menu;
     private static int last_registration_id = 0;
     private int registration_id = last_registration_id++;
-    private string name { owned get { return @"$id-0000-$registration_id"; } } // TODO
+    private string name { owned get { return @"$id-$((int)Posix.getpid())-$registration_id"; } }
     private bool registered;
     private uint name_owner_id;
     private DBusConnection dbus_connection;
