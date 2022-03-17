@@ -1,3 +1,5 @@
+namespace Dino {
+
 [DBus (name = "org.kde.StatusNotifierWatcher")]
 private interface DBusStatusNotifierWatcher : Object {
     [DBus (name = "RegisterStatusNotifierItem")]
@@ -362,4 +364,6 @@ public class StatusNotifierItem : Object {
         dbus_connection = null;
         registered = false;
     }
+}
+
 }

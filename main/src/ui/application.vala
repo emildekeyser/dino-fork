@@ -123,7 +123,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
     {
 
         systray = new StatusNotifierItem() {
-            id = "org.dino.application",
+            id = "org.dino.Dino",
             category = "Communications",
             title = "Dino",
             status = "Active",
@@ -153,7 +153,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
             return true;
         });
 
-        settings.notify["systray"].connect((_paramspec) => {
+        settings.notify["systray"].connect(() => {
             if (settings.systray) {
                 systray.register();
             } else {
