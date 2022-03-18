@@ -79,37 +79,19 @@ private class DBusStatusNotifierItem : Object {
 [DBus (name = "com.canonical.dbusmenu")]
 private class DBusMenu : Object {
     private StatusNotifierItem item;
+    private string _text_direction;
 
-    public DBusMenu(StatusNotifierItem item) {
+    public DBusMenu(StatusNotifierItem item, string text_direction) {
         this.item = item;
+        _text_direction = text_direction;
     }
 
     [DBus (name = "TextDirection")]
-    public string text_direction { get {
-        var samples = new Gee.ArrayList<string>();
-        for(int i = 0; i < item.menu_model.get_n_items(); i++) {
-            var label = item.menu_model.get_item_attribute_value(i, Menu.ATTRIBUTE_LABEL, VariantType.STRING);
-            samples.add(label.get_string());
-        }
-        if (samples.all_match(is_rtl)) {
-            return "rtl";
-        }
-        return "ltr";
-    }}
-
+    public string text_direction { get { return _text_direction; } }
     [DBus (name = "Version")]
     public uint32 version { get { return 3; } }
     [DBus (name = "Status")]
     public string status { get { return "normal"; } }
-
-    private bool is_rtl(string text_sample) {
-        foreach (char c in (char[])text_sample) {
-            if (c >= 0x600 && c <= 0x6ff) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private static int32[] get_children_ids(int32 parent_id, MenuModel model) {
         MenuModel local_model = model;
@@ -328,6 +310,7 @@ public class StatusNotifierItem : Object {
     public DBusStatusNotifierItemToolTip? tool_tip { get; set; }
     public MenuModel? menu_model { get; set; }
     public uint32 menu_model_revision = 1;
+    public string text_direction { get; set; }
 
     public signal void context_menu(int x, int y);
     public signal void activate(int x, int y);
@@ -348,7 +331,7 @@ public class StatusNotifierItem : Object {
     private void on_bus_aquired(DBusConnection dbus_connection) {
         this.dbus_connection = dbus_connection;
         if (menu_model == null) dbus_menu = null;
-        if (menu_model != null && dbus_menu == null) dbus_menu = new DBusMenu(this);
+        if (menu_model != null && dbus_menu == null) dbus_menu = new DBusMenu(this, text_direction);
         if (dbus_menu != null) dbus_menu_registration_id = dbus_connection.register_object("/StatusNotifierMenu", dbus_menu);
         if (dbus_item == null) dbus_item = new DBusStatusNotifierItem(this, dbus_menu != null ? new ObjectPath("/StatusNotifierMenu") : null);
         dbus_item_registration_id = dbus_connection.register_object("/StatusNotifierItem", dbus_item);
