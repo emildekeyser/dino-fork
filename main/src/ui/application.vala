@@ -119,8 +119,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
         }
     }
 
-    private void setup_systray()
-    {
+    private void setup_systray() {
 
         systray = new StatusNotifierItem() {
             id = "org.dino.Dino",
