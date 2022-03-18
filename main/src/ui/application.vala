@@ -131,6 +131,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
         };
 
         var menu = new GLib.Menu();
+        // TODO make these gettext strings to enable textdirection support for dbusmenu
         menu.append("Show", "app.show");
         menu.append("Quit", "app.quit");
         systray.menu_model = menu;

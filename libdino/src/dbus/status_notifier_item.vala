@@ -84,12 +84,32 @@ private class DBusMenu : Object {
         this.item = item;
     }
 
+    [DBus (name = "TextDirection")]
+    public string text_direction { get {
+        var samples = new Gee.ArrayList<string>();
+        for(int i = 0; i < item.menu_model.get_n_items(); i++) {
+            var label = item.menu_model.get_item_attribute_value(i, Menu.ATTRIBUTE_LABEL, VariantType.STRING);
+            samples.add(label.get_string());
+        }
+        if (samples.all_match(is_rtl)) {
+            return "rtl";
+        }
+        return "ltr";
+    }}
+
     [DBus (name = "Version")]
     public uint32 version { get { return 3; } }
-    [DBus (name = "TextDirection")]
-    public string text_direction { get { return "ltr"; } }
     [DBus (name = "Status")]
     public string status { get { return "normal"; } }
+
+    private bool is_rtl(string text_sample) {
+        foreach (char c in (char[])text_sample) {
+            if (c >= 0x600 && c <= 0x6ff) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private static int32[] get_children_ids(int32 parent_id, MenuModel model) {
         MenuModel local_model = model;
@@ -243,8 +263,7 @@ private class DBusMenu : Object {
     }
 
     [DBus (name = "EventGroup")]
-    public int[] event_group(DBusMenuEventStruct[] events) throws DBusError
-    {
+    public int[] event_group(DBusMenuEventStruct[] events) throws DBusError {
         var ret = new Gee.ArrayList<int>();
         foreach(var ev in events) {
             if (!resolve_event(ev.id, ev.event_id, ev.data, ev.timestamp)) {
