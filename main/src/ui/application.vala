@@ -69,6 +69,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
             notification_events.notify_content_item.connect((content_item, conversation) => {
                 // Set urgency hint also if (normal) notifications are disabled
                 // Don't set urgency hint in GNOME, produces "Window is active" notification
+                systray.icon_name = "im.dino.Dino-symbolic";
                 var desktop_env = Environment.get_variable("XDG_CURRENT_DESKTOP");
                 if (desktop_env == null || !desktop_env.down().contains("gnome")) {
                     if (this.active_window != null) {
@@ -155,6 +156,11 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
             } else {
                 window.show();
             }
+        });
+
+        window.focus_in_event.connect(() => {
+            systray.icon_name = "im.dino.Dino";
+            return true;
         });
 
         window.delete_event.connect(() => {
