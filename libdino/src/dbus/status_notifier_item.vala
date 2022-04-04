@@ -303,7 +303,7 @@ public class StatusNotifierItem : Object {
     public string category { get; set; }
     public string status { get; set; }
     public int32 window_id { get; set; }
-    public bool is_menu { get; set; }
+    public bool is_menu = false;
     public string icon_name { get; set; }
     public string? overlay_icon_name { get; set; }
     public string? attention_icon_name { get; set; }

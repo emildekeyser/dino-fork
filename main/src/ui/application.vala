@@ -140,7 +140,6 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
             title = "Dino",
             status = "Active",
             icon_name = "im.dino.Dino",
-            is_menu = true,
             text_direction = get_locale_direction() == TextDirection.RTL ? "rtl" : "ltr"
         };
 
