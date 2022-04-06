@@ -98,7 +98,10 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
                     window.present();
                 }
 
+            } else {
+                window.present();
             }
+
         });
     }
 
