@@ -46,7 +46,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
 
         startup.connect(() => {
             if (print_version) {
-                print(@"Dino $(Dino.VERSION)\n");
+                print(@"Dino $(Dino.get_version())\n");
                 Process.exit(0);
             }
 
@@ -69,6 +69,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
             notification_events.notify_content_item.connect((content_item, conversation) => {
                 // Set urgency hint also if (normal) notifications are disabled
                 // Don't set urgency hint in GNOME, produces "Window is active" notification
+                systray.icon_name = "im.dino.Dino-symbolic";
                 var desktop_env = Environment.get_variable("XDG_CURRENT_DESKTOP");
                 if (desktop_env == null || !desktop_env.down().contains("gnome")) {
                     if (this.active_window != null) {
@@ -157,6 +158,11 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
             } else {
                 window.show();
             }
+        });
+
+        window.focus_in_event.connect(() => {
+            systray.icon_name = "im.dino.Dino";
+            return true;
         });
 
         window.delete_event.connect(() => {
@@ -340,7 +346,7 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
     }
 
     private void show_about_window() {
-        string? version = Dino.VERSION.strip().length == 0 ? null : Dino.VERSION;
+        string? version = Dino.get_version().strip().length == 0 ? null : Dino.get_version();
         if (version != null && !version.contains("git")) {
             switch (version.substring(0, 3)) {
                 case "0.2": version = @"$version - <span font_style='italic'>Mexican Caribbean Coral Reefs</span>"; break;
